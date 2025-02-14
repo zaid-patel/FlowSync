@@ -1,20 +1,11 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from "react"
 
-function PrimaryBtn({
-    children,
-    onClick,
-    size="small",
-
-}:{
-    children:ReactNode,
-    onClick:()=>void,
-    size?:"big" | "small",
-}) {
-  return (
-    <div className={`${size=="small"?"text-sm":"text-xl" }   ${size=="small"?"px-4 py-2 ":"px-8 py-10" }  bg-amber-700 flex justify-center items-center text-white `} onClick={onClick}>
-      {children}
+export const PrimaryButton = ({ children, onClick, size = "small" }: {
+    children: ReactNode,
+    onClick: () => void,
+    size?: "big" | "small"
+}) => {
+    return <div onClick={onClick} className={`${size === "small" ? "text-sm" : "text-xl"} ${size === "small" ? "px-8 py-2" : "px-10 py-4"} cursor-pointer hover:shadow-md bg-amber-700 text-white rounded-full text-center flex justify-center flex-col`}>
+        {children}
     </div>
-  )
 }
-
-export default PrimaryBtn

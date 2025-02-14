@@ -22,7 +22,7 @@ app.post("/create/:userId/:zapId",async(req,res)=>{
         const run=await tx.zapRun.create({
            data:{ 
             zapId:zapId,
-            metadata:body,
+            metadata:body as string,
         }
 
         });

@@ -2,7 +2,7 @@
 
 import LinkButton from "./buttons/LinkButton"
 import { useRouter } from "next/navigation";
-import PrimaryBtn from "./buttons/PrimaryBtn";
+import {PrimaryButton}  from "./buttons/PrimaryBtn";
 
 
 
@@ -24,11 +24,11 @@ export const AppBar=()=>{
               Login
            </LinkButton>
                 
-            <PrimaryBtn onClick={()=>{
+            <PrimaryButton onClick={()=>{
                 router.push('/sign-up')
             }}>
                 Sign-up 
-            </PrimaryBtn>
+            </PrimaryButton>
         </div>
 
     </div>

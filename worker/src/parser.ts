@@ -3,8 +3,10 @@ import { log } from "console";
 export function parse(body:string,value:any,startDelimiter="{",endDilimiter="}"){
     let st=0;
     let res="";
-    const s = JSON.parse(value);
-    while(st<body.length){
+    console.log(typeof value);
+    
+    const s = value;
+    while(st<body?.length){
         log(res);
         if(body[st]==startDelimiter){
             let curr=st;
