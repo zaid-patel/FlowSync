@@ -10,11 +10,31 @@ app.use(express.json());
 
 // app.get('/')
 
-app.post("/create/:userId/:zapId",async(req,res)=>{
-    const userId=req.params.userId;
+app.post("/hooks/catch/:userId/:zapId",async(req,res)=>{
+    const userId=parseInt(req.params.userId);
     const zapId=req.params.zapId;
 
     const body=req.body;
+
+    console.log(userId);
+
+    const zap=await client.zap.findFirst({
+        where:{
+            id:zapId,
+            userId:userId,
+        }
+    })
+
+    if(!zap) {
+        // console.log(11111);
+        
+        res.json({
+            message:"invalid hook",
+        })
+        return; 
+    }
+
+    
 
     // console.log(zapId);
     

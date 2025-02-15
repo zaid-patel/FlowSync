@@ -1,35 +1,46 @@
-"use client"
+"use client";
+import { useRouter } from "next/navigation"
+import LinkButton  from "./buttons/LinkButton"
+import { PrimaryButton } from "./buttons/PrimaryBtn";
+import { useEffect, useState } from "react";
 
-import LinkButton from "./buttons/LinkButton"
-import { useRouter } from "next/navigation";
-import {PrimaryButton}  from "./buttons/PrimaryBtn";
-
-
-
-export const AppBar=()=>{
-
-    const router=useRouter();
-    return <div  className="flex border-b p-4  justify-between">
-        <div  className="flex flex-col justify-center">
-            FlowSync 
+export const AppBar = () => {
+    const router = useRouter();
+    const [token,setToken]=useState<String | null>();
+    useEffect(()=>{
+        setToken(localStorage.getItem('token'));
+    },[])
+    return <div className="flex border-b justify-between p-4">
+        <div className="flex flex-col justify-center text-2xl font-extrabold">
+            FlowSync
         </div>
-        <div className="flex ">
-           <LinkButton onClick={()=>{}} >
-              Contact-Sales 
-           </LinkButton>
-           <LinkButton onClick={()=>{
-
-                router.push("/login"); 
-           }} >
-              Login
-           </LinkButton>
-                
-            <PrimaryButton onClick={()=>{
-                router.push('/sign-up')
+       {!token ?  
+       <div className="flex">
+            <div className="pr-4">
+                <LinkButton onClick={() => {}}>Contact Sales</LinkButton>
+            </div>
+            <div className="pr-4">
+                <LinkButton onClick={() => {
+                    router.push("/login")
+                }}>Login</LinkButton>
+            </div>
+            <PrimaryButton onClick={() => {
+                router.push("/signup")
             }}>
-                Sign-up 
-            </PrimaryButton>
+                Signup
+            </PrimaryButton>            
         </div>
-
+        : <div className="flex">
+            <div className="pr-4">
+                <LinkButton onClick={() => {}}>Contact Sales</LinkButton>
+            </div>
+           
+            <PrimaryButton onClick={() => {
+               localStorage.removeItem('token')
+               setToken(null)
+            }}>
+                Logout
+            </PrimaryButton>            
+        </div>}
     </div>
 }
