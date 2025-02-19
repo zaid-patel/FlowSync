@@ -21,6 +21,17 @@ model User{
   email String
   password String
   zaps Zap[]
+  tokens Auth[]
+}
+
+model Auth{
+    id Int @id @default(autoincrement())
+    userId Int 
+    user User @relation(fields: [userId],references: [id])
+    type String
+    token String
+    pageId String?  // for notion (ig can be abstracted (not normalized))
+    expiresAt DateTime? 
 }
 
 model Zap{

@@ -6,6 +6,7 @@ import { parse } from "./parser";
 import dotenv from "dotenv"
 import { log } from "console";
 import { sendEmail } from "./email";
+import { writeToNotion } from "./notion";
 
 dotenv.config(); 
 
@@ -100,6 +101,26 @@ async function main() {
                 // send sol
                 console.log("sol");
                 
+            }
+            // 6191c10c-b5f5-4fbf-8a75-f014648d83b1
+            if(currentAction.type.id==="notion"){
+                // edit notion
+                console.log("notion");
+                // @ts-ignore
+                const pageId=currentAction.metadata.pageId.toString();
+                // get accesstoken from auth table on basis of userId and pageId (pageId from actions table)
+                const response=await prismaClient.auth.findFirst({
+                    where:{
+                        pageId,
+                    }
+                })
+                if(response?.token){
+                     //   text from parser
+                const text=parse((currentAction.metadata as JsonObject )?.body as string,zapRunMetadata);
+                // @ts-ignore
+                await writeToNotion({notionId:pageId,accessToken:response.token,text,isDatabase:currentAction.metadata?.isDatabase});
+                }
+               
             }
 
 

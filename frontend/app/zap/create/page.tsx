@@ -160,6 +160,12 @@ function Modal({ index, onSelect, availableItems }: { index: number, onSelect: (
                             metadata
                         })
                     }} />}
+                     {(step === 1 && selectedAction?.id === "notion") && <NotionSelector setMetadata={(metadata) => {
+                        onSelect({
+                            ...selectedAction,
+                            metadata
+                        })
+                    }} />}
 
                     {step === 0 && <div>{availableItems.map(({id, name, image},index:number) => {
                             return <div  key={index} onClick={() => {
@@ -207,6 +213,49 @@ function EmailSelector({setMetadata}: {
     </div>
 }
 
+
+function NotionSelector({setMetadata}: {
+    
+    setMetadata: (params: any) => void;
+}) {
+    const [pageId, setPageId] = useState("");
+    const [body, setBody] = useState("");
+    const [isDatabase,setIsDatabase]=useState(false);
+    const token=localStorage.getItem('token');
+
+    return <div>
+        <Input label={"Page id (from notion)"} type={"text"} placeholder="To" onChange={(e) => setPageId(e.target.value)}></Input>
+        <Input label={"Body"} type={"text"} placeholder="Body" onChange={(e) => setBody(e.target.value)}></Input>
+        <Input label={"Is Database?"} type={"text"} placeholder="true/false" onChange={(e) => setIsDatabase(e.target.value==="true")}></Input>
+
+        <div className="pt-2">
+            <PrimaryButton onClick={() => {
+                setMetadata({
+                    pageId,
+                    body,
+                    isDatabase,
+                })
+            }}>Submit</PrimaryButton>
+            <LinkButton onClick={() => {
+                  const width = 500, height = 600;
+                      const left = (window.innerWidth - width) / 2;
+              const top = (window.innerHeight - height) / 2;
+              const state = JSON.stringify({ token, pageId });
+            //   const encodedState = encodeURIComponent(state);
+              
+              window.open(
+                `https://api.notion.com/v1/oauth/authorize?client_id=19bd872b-594c-80b9-b80f-0037ad077307&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fa133-103-59-202-209.ngrok-free.app%2Fauth%2Fnotion%2F&state=${state}`,
+                "NotionAuth",
+                `width=${width},height=${height},top=${top},left=${left}`
+              );
+                    }}>
+                           Give access to page with id: {pageId}
+            </LinkButton>
+
+        </div>
+    </div>
+}
+
 function SolanaSelector({setMetadata}: {
     setMetadata: (params: any) => void;
 }) {
@@ -223,6 +272,9 @@ function SolanaSelector({setMetadata}: {
                 address
             })
         }}>Submit</PrimaryButton>
+      
+         
+
         </div>
     </div>
 }

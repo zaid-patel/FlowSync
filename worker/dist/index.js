@@ -19,6 +19,7 @@ const parser_1 = require("./parser");
 const dotenv_1 = __importDefault(require("dotenv"));
 const console_1 = require("console");
 const email_1 = require("./email");
+const notion_1 = require("./notion");
 dotenv_1.default.config();
 const prismaClient = new client_1.PrismaClient();
 const topic_name = "zap-events";
@@ -43,7 +44,7 @@ function main() {
         yield consumer.run({
             // autoCommit:false,  // by default dont commit as the worker might die before finishing the job
             eachMessage: (_a) => __awaiter(this, [_a], void 0, function* ({ topic, partition, message }) {
-                var _b, _c, _d, _e, _f;
+                var _b, _c, _d, _e, _f, _g, _h;
                 console.log({
                     topic,
                     message,
@@ -82,11 +83,9 @@ function main() {
                 const zapRunMetadata = zapRundetails === null || zapRundetails === void 0 ? void 0 : zapRundetails.metadata;
                 (0, console_1.log)(zapRunMetadata);
                 if (currentAction.type.id === "email") {
-                    // send email
-                    // @ts-ignore
-                    const body = (0, parser_1.parse)((_d = (currentAction.metadata)) === null || _d === void 0 ? void 0 : _d.body, zapRunMetadata);
-                    // @ts-ignore
-                    const to = (0, parser_1.parse)((_e = (currentAction.metadata)) === null || _e === void 0 ? void 0 : _e.to, zapRunMetadata);
+                    // send email  
+                    const body = (0, parser_1.parse)((_d = currentAction.metadata) === null || _d === void 0 ? void 0 : _d.body, zapRunMetadata);
+                    const to = (0, parser_1.parse)((_e = currentAction.metadata) === null || _e === void 0 ? void 0 : _e.to, zapRunMetadata);
                     // const to=
                     console.log(`Sending out email to ${to} body is ${body}`);
                     yield (0, email_1.sendEmail)(to, body);
@@ -95,8 +94,26 @@ function main() {
                     // send sol
                     console.log("sol");
                 }
+                if (currentAction.type.id === "notion") {
+                    // edit notion
+                    console.log("notion");
+                    // @ts-ignore
+                    const pageId = currentAction.metadata.pageId.toString();
+                    // get accesstoken from auth table on basis of userId and pageId (pageId from actions table)
+                    const response = yield prismaClient.auth.findFirst({
+                        where: {
+                            pageId,
+                        }
+                    });
+                    if (response === null || response === void 0 ? void 0 : response.token) {
+                        //   text from parser
+                        const text = (0, parser_1.parse)((_f = currentAction.metadata) === null || _f === void 0 ? void 0 : _f.body, zapRunMetadata);
+                        // @ts-ignore
+                        yield (0, notion_1.writeToNotion)({ notionId: pageId, accessToken: response.token, text, isDatabase: (_g = currentAction.metadata) === null || _g === void 0 ? void 0 : _g.isDatabase });
+                    }
+                }
                 yield new Promise(r => setTimeout(r, 500));
-                const lastStage = (((_f = zapRundetails === null || zapRundetails === void 0 ? void 0 : zapRundetails.zap.actions) === null || _f === void 0 ? void 0 : _f.length) || 1) - 1; // 1
+                const lastStage = (((_h = zapRundetails === null || zapRundetails === void 0 ? void 0 : zapRundetails.zap.actions) === null || _h === void 0 ? void 0 : _h.length) || 1) - 1; // 1
                 console.log(lastStage);
                 console.log(stage);
                 if (lastStage !== stage) {
